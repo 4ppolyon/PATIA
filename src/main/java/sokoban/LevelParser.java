@@ -25,6 +25,10 @@ public class LevelParser {
         AGENT_SUR_BUT
     }
 
+    private final String GAUCHE= "L";
+    private final String DROITE = "R";
+    private final String HAUT = "U";
+    private final String BAS = "D";
     private final String resultFilePath;
     private final int nbRows;
     private final int nbCols;
@@ -69,7 +73,7 @@ public class LevelParser {
         this.cases = new CASE_TYPE[nbRows][nbCols];
         for(int r = 0; r < nbRows; r++) {
             for(int c = 0; c < nbCols; c++) {
-                this.cases[r][c] = CASE_TYPE.MUR;
+                this.cases[r][c] = CASE_TYPE.SOL;
             }
         }
 
@@ -79,6 +83,7 @@ public class LevelParser {
         int row = 0;
         int col = 0;
         for(char c : level.toCharArray()) {
+            System.out.print(c);
             switch (c) {
                 case ' ':
                     this.cases[row][col] = CASE_TYPE.SOL;
@@ -100,15 +105,20 @@ public class LevelParser {
                 case '+':
                     this.cases[row][col] = CASE_TYPE.AGENT_SUR_BUT;
                     break;
+                case '#':
+                    this.cases[row][col] = CASE_TYPE.MUR;
+                    break;
             }
 
             if(c == '\n') {
+                System.out.println();
                 row++;
                 col = 0;
             } else {
                 col++;
             }
         }
+        System.out.println();
         this.nbButsCaisses = nbButsCaisses;
     }
 
@@ -141,7 +151,7 @@ public class LevelParser {
         fileWriter.write("(:objects\n");
 
         // Directions
-        fileWriter.write("\tnord sud est ouest - direction\n\t");
+        fileWriter.write("\t" + HAUT + " " + BAS + " " + GAUCHE + " " + DROITE + " - direction\n\t");
 
         // Cases
         for(int r = 0; r < nbRows; r++) {
@@ -188,6 +198,7 @@ public class LevelParser {
                     case AGENT_SUR_BUT:
                         if(nbButs > 0) {
                             fileWriter.write("\t(butSurCase " + butID(nbButs) + " " + caseID(r, c) + ")\n");
+                            fileWriter.write("\tbutVide " + butID(nbButs) + ")\n");
                             nbButs--;
                         }
                     case AGENT:
@@ -196,17 +207,23 @@ public class LevelParser {
                     case CAISSE:
                         if(nbCaisses > 0) {
                             fileWriter.write("\t(caisseSur " + caisseID(nbCaisses) + " " + caseID(r, c) + ")\n");
+                            fileWriter.write("\t(caisseLibre " + caisseID(nbCaisses) + ")\n");
                             nbCaisses--;
                         }
                         break;
                     case CAISSE_SUR_BUT:
                         if(nbCaisses > 0) {
                             fileWriter.write("\t(caisseSur " + caisseID(nbCaisses) + " " + caseID(r, c) + ")\n");
+                            fileWriter.write("\t(caisseSurBut " + caisseID(nbCaisses) + ")\n");
+                            fileWriter.write("\t(butSurCase " + butID(nbButs) + " " + caseID(r, c) + ")\n");
                             nbCaisses--;
+                            nbButs--;
                         }
+                        break;
                     case BUT:
                         if(nbButs > 0) {
                             fileWriter.write("\t(butSurCase " + butID(nbButs) + " " + caseID(r, c) + ")\n");
+                            fileWriter.write("\t(butVide " + butID(nbButs) + ")\n");
                             nbButs--;
                         }
                         break;
@@ -220,19 +237,19 @@ public class LevelParser {
                 if(cases[r][c] != CASE_TYPE.MUR) {
                     // Case au dessus
                     if(r > 0 && cases[r - 1][c] != CASE_TYPE.MUR) {
-                        fileWriter.write("\t(adjacente " + caseID(r - 1, c) + " " + caseID(r, c) + " nord)\n");
+                        fileWriter.write("\t(adjacente " + caseID(r - 1, c) + " " + caseID(r, c) + " " + HAUT + ")\n");
                     }
                     // Case en dessous
                     if(r < nbRows - 1 && cases[r + 1][c] != CASE_TYPE.MUR) {
-                        fileWriter.write("\t(adjacente " + caseID(r + 1, c) + " " + caseID(r, c) + " sud)\n");
+                        fileWriter.write("\t(adjacente " + caseID(r + 1, c) + " " + caseID(r, c) + " " + BAS + ")\n");
                     }
                     // Case à gauche
                     if(c > 0 && cases[r][c - 1] != CASE_TYPE.MUR) {
-                        fileWriter.write("\t(adjacente " + caseID(r, c - 1) + " " + caseID(r, c) + " ouest)\n");
+                        fileWriter.write("\t(adjacente " + caseID(r, c - 1) + " " + caseID(r, c) + " " + GAUCHE + ")\n");
                     }
                     // Case à droite
                     if(c < nbCols - 1 && cases[r][c + 1] != CASE_TYPE.MUR) {
-                        fileWriter.write("\t(adjacente " + caseID(r, c + 1) + " " + caseID(r, c) + " est)\n");
+                        fileWriter.write("\t(adjacente " + caseID(r, c + 1) + " " + caseID(r, c) + " " + DROITE + ")\n");
                     }
                 }
             }
@@ -258,7 +275,7 @@ public class LevelParser {
         fileWriter.write("(:goal (and\n");
 
         for(int i = 1; i <= nbButsCaisses; i++) {
-            fileWriter.write("\t(butOccupe but" + i + ")\n");
+            fileWriter.write("\t(caisseSurBut caisse" + i + ")\n");
         }
 
         fileWriter.write("))\n");
