@@ -1,33 +1,13 @@
-Play the game on [CodinGame](https://www.codingame.com/training/hard/sokoban)
+Pour compiler le code
 
-Maven is needed.
+    ./build.sh
 
-Install pddl4j (https://github.com/pellierd/pddl4j) in your local maven repo:
-```
-mvn install:install-file \
-   -Dfile=/home/bossyr/Master/S8/PATIA/pddl4j-4.0.0.jar \
-   -DgroupId=fr.uga \
-   -DartifactId=pddl4j \
-   -Dversion=4.0.0 \
-   -Dpackaging=jar \
-   -DgeneratePom=true
- ```  
-Work with maven: mvn clean, mvn compile, mvn test, mvn package
+Pour lancer l'affichage d'un niveau avec la solution
 
-Run with: 
-````
-java --add-opens java.base/java.lang=ALL-UNNAMED \
-      -server -Xms2048m -Xmx2048m \
-      -cp "$(mvn dependency:build-classpath -Dmdep.outputFile=/dev/stdout -q):target/test-classes/:target/classes" \
-      sokoban.SokobanMain
-````
-or (after mvn package)
-```
-java --add-opens java.base/java.lang=ALL-UNNAMED \
-      -server -Xms2048m -Xmx2048m \
-      -cp target/sokoban-1.0-SNAPSHOT-jar-with-dependencies.jar \
-      sokoban.SokobanMain
-```
-Sorry ```mvn exec:java``` has still an open issue ("Directory src/main/resources/view/assets not found.")
+    ./run.sh numéro_du_niveau
 
-See planning solutions at http://localhost:8888/test.html
+Puis ouvrir le lien http://localhost:8888/test.html
+
+Pour avoir les plans de tout les niveaux dans le dossier config
+
+    ./solveAll.sh
