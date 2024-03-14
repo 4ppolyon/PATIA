@@ -1,31 +1,15 @@
 package sokoban;
 
-//import org.json.simple.JSONObject;
-//import org.json.simple.parser.JSONParser;
-
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.JSONParser;   
 
-import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.jar.JarEntry;
-import java.util.logging.Level;
 
 public class LevelParser {
 
-    private enum CASE_TYPE {
-        SOL,
-        MUR,
-        AGENT,
-        CAISSE,
-        BUT,
-        CAISSE_SUR_BUT,
-        AGENT_SUR_BUT
-    }
-
-    private final String GAUCHE= "L";
+    private final String GAUCHE = "L";
     private final String DROITE = "R";
     private final String HAUT = "U";
     private final String BAS = "D";
@@ -34,7 +18,6 @@ public class LevelParser {
     private final int nbCols;
     private final CASE_TYPE[][] cases;
     private final int nbButsCaisses;
-
     public LevelParser(String problemPath, String filePath) throws Exception {
         this.resultFilePath = filePath;
 
@@ -48,9 +31,9 @@ public class LevelParser {
             int nbRows = 0;
             int nbCols = 0;
             int cols = 0;
-            for(char c : level.toCharArray()) {
-                if(c == '\n') {
-                    if(cols > nbCols) {
+            for (char c : level.toCharArray()) {
+                if (c == '\n') {
+                    if (cols > nbCols) {
                         nbCols = cols;
                     }
                     nbRows++;
@@ -59,7 +42,7 @@ public class LevelParser {
                     cols++;
                 }
             }
-            if(cols > nbCols) {
+            if (cols > nbCols) {
                 nbCols = cols;
             }
 
@@ -71,8 +54,8 @@ public class LevelParser {
 
         // Par défaut toutes les cases du niveau sont des murs
         this.cases = new CASE_TYPE[nbRows][nbCols];
-        for(int r = 0; r < nbRows; r++) {
-            for(int c = 0; c < nbCols; c++) {
+        for (int r = 0; r < nbRows; r++) {
+            for (int c = 0; c < nbCols; c++) {
                 this.cases[r][c] = CASE_TYPE.SOL;
             }
         }
@@ -82,7 +65,7 @@ public class LevelParser {
         int nbButsCaisses = 0;
         int row = 0;
         int col = 0;
-        for(char c : level.toCharArray()) {
+        for (char c : level.toCharArray()) {
             System.out.print(c);
             switch (c) {
                 case ' ':
@@ -110,7 +93,7 @@ public class LevelParser {
                     break;
             }
 
-            if(c == '\n') {
+            if (c == '\n') {
                 System.out.println();
                 row++;
                 col = 0;
@@ -120,6 +103,12 @@ public class LevelParser {
         }
         System.out.println();
         this.nbButsCaisses = nbButsCaisses;
+    }
+
+    public static void main(String[] args) throws Exception {
+        LevelParser parser = new LevelParser(args[0], args[1]);
+        parser.writeFile();
+        System.out.println(parser);
     }
 
     public void writeFile() throws Exception {
@@ -154,9 +143,9 @@ public class LevelParser {
         fileWriter.write("\t" + HAUT + " " + BAS + " " + GAUCHE + " " + DROITE + " - direction\n\t");
 
         // Cases
-        for(int r = 0; r < nbRows; r++) {
-            for(int c = 0; c < nbCols; c++) {
-                if(cases[r][c] != CASE_TYPE.MUR) {
+        for (int r = 0; r < nbRows; r++) {
+            for (int c = 0; c < nbCols; c++) {
+                if (cases[r][c] != CASE_TYPE.MUR) {
                     fileWriter.write(caseID(r, c) + " ");
                 }
             }
@@ -169,15 +158,15 @@ public class LevelParser {
         fileWriter.write("\t");
 
         // Caisses
-        for(int i = 0; i < nbButsCaisses; i++) {
-            fileWriter.write(caisseID(i+1) + " ");
+        for (int i = 0; i < nbButsCaisses; i++) {
+            fileWriter.write(caisseID(i + 1) + " ");
         }
         fileWriter.write("- caisse\n");
 
         fileWriter.write("\t");
 
         // Buts
-        for(int i = 0; i < nbButsCaisses; i++) {
+        for (int i = 0; i < nbButsCaisses; i++) {
             fileWriter.write(butID(i + 1) + " ");
         }
         fileWriter.write("- but\n");
@@ -192,27 +181,27 @@ public class LevelParser {
         int nbCaisses = this.nbButsCaisses;
         int nbButs = this.nbButsCaisses;
 
-        for(int r = 0; r < nbRows; r++) {
-            for(int c = 0; c < nbCols; c++) {
+        for (int r = 0; r < nbRows; r++) {
+            for (int c = 0; c < nbCols; c++) {
                 switch (cases[r][c]) {
                     case AGENT_SUR_BUT:
-                        if(nbButs > 0) {
+                        if (nbButs > 0) {
                             fileWriter.write("\t(butSurCase " + butID(nbButs) + " " + caseID(r, c) + ")\n");
-                            fileWriter.write("\tbutVide " + butID(nbButs) + ")\n");
+                            fileWriter.write("\t(butVide " + butID(nbButs) + ")\n");
                             nbButs--;
                         }
                     case AGENT:
                         fileWriter.write("\t(agentSur a " + caseID(r, c) + ")\n");
                         break;
                     case CAISSE:
-                        if(nbCaisses > 0) {
+                        if (nbCaisses > 0) {
                             fileWriter.write("\t(caisseSur " + caisseID(nbCaisses) + " " + caseID(r, c) + ")\n");
                             fileWriter.write("\t(caisseLibre " + caisseID(nbCaisses) + ")\n");
                             nbCaisses--;
                         }
                         break;
                     case CAISSE_SUR_BUT:
-                        if(nbCaisses > 0) {
+                        if (nbCaisses > 0) {
                             fileWriter.write("\t(caisseSur " + caisseID(nbCaisses) + " " + caseID(r, c) + ")\n");
                             fileWriter.write("\t(caisseSurBut " + caisseID(nbCaisses) + ")\n");
                             fileWriter.write("\t(butSurCase " + butID(nbButs) + " " + caseID(r, c) + ")\n");
@@ -221,7 +210,7 @@ public class LevelParser {
                         }
                         break;
                     case BUT:
-                        if(nbButs > 0) {
+                        if (nbButs > 0) {
                             fileWriter.write("\t(butSurCase " + butID(nbButs) + " " + caseID(r, c) + ")\n");
                             fileWriter.write("\t(butVide " + butID(nbButs) + ")\n");
                             nbButs--;
@@ -232,23 +221,23 @@ public class LevelParser {
         }
 
         // Définition adjacence des cases
-        for(int r = 0; r < nbRows; r++) {
-            for(int c = 0; c < nbCols; c++) {
-                if(cases[r][c] != CASE_TYPE.MUR) {
+        for (int r = 0; r < nbRows; r++) {
+            for (int c = 0; c < nbCols; c++) {
+                if (cases[r][c] != CASE_TYPE.MUR) {
                     // Case au dessus
-                    if(r > 0 && cases[r - 1][c] != CASE_TYPE.MUR) {
+                    if (r > 0 && cases[r - 1][c] != CASE_TYPE.MUR) {
                         fileWriter.write("\t(adjacente " + caseID(r - 1, c) + " " + caseID(r, c) + " " + HAUT + ")\n");
                     }
                     // Case en dessous
-                    if(r < nbRows - 1 && cases[r + 1][c] != CASE_TYPE.MUR) {
+                    if (r < nbRows - 1 && cases[r + 1][c] != CASE_TYPE.MUR) {
                         fileWriter.write("\t(adjacente " + caseID(r + 1, c) + " " + caseID(r, c) + " " + BAS + ")\n");
                     }
                     // Case à gauche
-                    if(c > 0 && cases[r][c - 1] != CASE_TYPE.MUR) {
+                    if (c > 0 && cases[r][c - 1] != CASE_TYPE.MUR) {
                         fileWriter.write("\t(adjacente " + caseID(r, c - 1) + " " + caseID(r, c) + " " + GAUCHE + ")\n");
                     }
                     // Case à droite
-                    if(c < nbCols - 1 && cases[r][c + 1] != CASE_TYPE.MUR) {
+                    if (c < nbCols - 1 && cases[r][c + 1] != CASE_TYPE.MUR) {
                         fileWriter.write("\t(adjacente " + caseID(r, c + 1) + " " + caseID(r, c) + " " + DROITE + ")\n");
                     }
                 }
@@ -256,7 +245,7 @@ public class LevelParser {
         }
 
         // Définition des cases vides
-        for(int r = 0; r < nbRows; r++) {
+        for (int r = 0; r < nbRows; r++) {
             for (int c = 0; c < nbCols; c++) {
                 switch (cases[r][c]) {
                     case BUT:
@@ -274,7 +263,7 @@ public class LevelParser {
     private void writeGoalState(FileWriter fileWriter) throws IOException {
         fileWriter.write("(:goal (and\n");
 
-        for(int i = 1; i <= nbButsCaisses; i++) {
+        for (int i = 1; i <= nbButsCaisses; i++) {
             fileWriter.write("\t(caisseSurBut caisse" + i + ")\n");
         }
 
@@ -285,8 +274,8 @@ public class LevelParser {
     public String toString() {
         StringBuilder builder = new StringBuilder();
 
-        for(int r = 0; r < nbRows; r++) {
-            for(int c = 0; c < nbCols; c++) {
+        for (int r = 0; r < nbRows; r++) {
+            for (int c = 0; c < nbCols; c++) {
                 builder.append(cases[r][c]).append("\t");
             }
             builder.append("\n");
@@ -295,9 +284,13 @@ public class LevelParser {
         return builder.toString();
     }
 
-    public static void main(String[] args) throws Exception {
-        LevelParser parser = new LevelParser(args[0], args[1]);
-        parser.writeFile();
-        System.out.println(parser);
+    private enum CASE_TYPE {
+        SOL,
+        MUR,
+        AGENT,
+        CAISSE,
+        BUT,
+        CAISSE_SUR_BUT,
+        AGENT_SUR_BUT
     }
 }

@@ -2,29 +2,23 @@ package sokoban;
 
 import com.codingame.gameengine.runner.SoloGameRunner;
 
+import java.io.*;
+import java.util.Scanner;
+
 public class SokobanMain {
 
-    private static int level = 37;
-    public static void main(String[] args) {
-        if(args.length > 0) {
-            int oldValue = level;
-            try {
-                level = Integer.parseInt(args[0]);
-            } catch (Exception e) {
-                level = oldValue;
-            }
-        }
+    public static void main(String[] args) throws Exception {
+        Scanner config = new Scanner(new File("config.txt"));
+        int level = Integer.parseInt(config.nextLine());
+        config.close();
+
         LevelSolver solver = new LevelSolver();
-        solver.solve(SokobanMain.getLevel());
+        solver.solve(level);
 
         SoloGameRunner gameRunner = new SoloGameRunner();
         gameRunner.setAgent(Agent.class);
         gameRunner.setTestCase("test" + level + ".json");
 
         gameRunner.start();
-    }
-
-    public static int getLevel() {
-        return level;
     }
 }

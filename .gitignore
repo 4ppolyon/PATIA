@@ -1,1 +1,5 @@
-/.attach_pid12153
+plans/
+target/
+
+pddl/problem*.pddl
+config.txt
