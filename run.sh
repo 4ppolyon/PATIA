@@ -2,6 +2,11 @@
 
 touch config.txt
 
+if [ -z "$1" ]; then
+    echo "Usage: ./run.sh <level>"
+    exit 1
+fi
+
 echo $1 > config.txt
 
 mkdir -p plans
