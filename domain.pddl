@@ -3,15 +3,22 @@
     (:types object tower)
 
     (:predicates
-        (smaller ?b1 - object ?b2 - object); Vrai si B1 est plus petit que b2
-        (clear ?b1 - object); Vrai si b1 n'a pas d'objet au dessus de lui
-        (ontower ?b1 - object ?t1 - tower); Vrai si b1 est sur la tour t1
-        (on ?b1 - object ?b2 - object); Vrai si b1 est au dessus de b2
-        (handempty); Vrai si la main est vide
-        (holding ?b1 - object); Vrai si la main tient l'objet b1
+        ; La pièce b1 est plus petite que la pièce b2
+        (smaller ?b1 - object ?b2 - object)
+        ; La pièce b1 n'a pas de pièce au-dessus d'elle
+        (clear ?b1 - object)
+        ; La pièce b1 est sur la tour t1
+        (ontower ?b1 - object ?t1 - tower)
+        ; La pièce b1 est au dessus de la pièce b2
+        (on ?b1 - object ?b2 - object)
+        ; La main ne tient aucune pièce
+        (handempty)
+        ; La main tient la pièce b1
+        (holding ?b1 - object)
     )
 
-    (:action unstack ; Dépiler un objet b1 au dessus de b2
+    ; La main prend la pièce se trouvant au sommet d'une tour
+    (:action unstack
         :parameters (?b1 - object ?b2 - object)
         :precondition (and (clear ?b1) (on ?b1 ?b2) (handempty))
         :effect (and 
@@ -23,7 +30,8 @@
         )
     )
 
-    (:action stack ; Empiler un objet b1 sur b2
+    ; La main place la pièce qu'elle tient sur une tour
+    (:action stack
         :parameters (?b1 - object ?b2 - object)
         :precondition (and (holding ?b1) (clear ?b2) (smaller ?b1 ?b2))
         :effect (and 
@@ -35,7 +43,9 @@
         )
     )
     
-    (:action unstack-empty ; Dépiler un objet b1 au dessus de la tour t
+    ; La main prend la pièce se trouvant au sommet d'une tour
+    ; et la tour n'a alors plus aucune pièce sur elle
+    (:action unstack-empty
         :parameters (?b1 - object ?t - tower)
         :precondition (and (clear ?b1) (handempty) (ontower ?b1 ?t))
         :effect (and 
@@ -47,9 +57,10 @@
         )
     )
     
-    (:action stack-empty ; Empiler un objet b1 sur la tour t
+    ; La main place la pièce qu'elle tient sur une tour qui n'a aucune pièce
+    (:action stack-empty
         :parameters (?b1 - object ?t - tower)
-        :precondition (and (holding ?b1) (clear ?t)) ; la tour est vide et la main tient l'objet
+        :precondition (and (holding ?b1) (clear ?t))
         :effect (and 
             (clear ?b1) ; l'objet est au dessus de la tour
             (not (clear ?t)) ; la tour n'est plus vide
