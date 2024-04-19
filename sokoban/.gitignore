@@ -1,0 +1,5 @@
+plans/
+target/
+
+pddl/problem*.pddl
+config.txt
