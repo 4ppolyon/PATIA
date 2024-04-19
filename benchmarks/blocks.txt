@@ -1,0 +1,18 @@
+WARNING: sun.reflect.Reflection.getCallerClass is not supported. This will impact performance.
+# WARNING: Unable to get Instrumentation. Dynamic Attach failed. You may add this JAR as -javaagent manually, or supply -Djdk.attach.allowAttachSelf
+# WARNING: Unable to attach Serviceability Agent. You can try again with escalated privileges. Two options: a) use -Djol.tryWithSudo=true to try with sudo; b) echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope
+10 0.303 0.053
+18 0.262 9.873
+12 0.005 0.038
+20 0.082 0.102
+22 0.398 13.259
+20 0.064 0.582
+6 0.002 0.002
+20 0.067 2.902
+10 0.002 0.009
+6 0.001 0.002
+12 0.002 0.011
+16 0.054 0.376
+10 0.002 0.04
+16 0.004 0.035
+20 0.27 220.502

@@ -38,7 +38,7 @@ public class SATEncoding {
         this.fluentsEffects = new HashMap<>();
         this.solver = SolverFactory.newMiniLearningHeap();
         this.ids = new HashMap<>();
-        this.lastID = 0;
+        this.lastID = 1;
 
         for(int i = 0; i < problem.getFluents().size(); i++) {
             final Fluent fluent = problem.getFluents().get(i);
