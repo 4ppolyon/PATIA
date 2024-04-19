@@ -1,0 +1,19 @@
+    (:action move_2_agent_meme_noeuds_au_debut
+	     :parameters (?ag1 - agent ?ag2 - agent ?n1 - noeud ?n2  - noeud ?arlink - arete ?ardessuspile1 - arete ?ardessuspile2 
+	                        - arete ?ardessouspile1 -arete ?ardessouspile2 - arete)
+	     
+	     :precondition (and (agentSur ?ag1 ?n1) (agentSur ?ag2 ?n1) (link ?n1 ?n2 ?arlink) (link ?n2 ?n1 ?arlink) (agentDiff ?ag1 ?ag2)
+             
+	     )
+	     
+	     :effect
+	     (and (agentSur ?ag1 ?n2) (not (agentSur ?ag1 ?n1)) (agentSur ?ag2 ?n1) (estAreteMarquee ?arlink) (not (on ?arlink ?ardessouspile1 ?n1)) (not (on ?ardessuspile1 ?arlink ?n1)) 
+	     (not (on ?arlink ?ardessouspile2 ?n2)) (not (on ?ardessuspile2 ?arlink ?n2)) (on ?ardessuspile1 ?ardessouspile1 ?n1) (on ?ardessuspile2 ?ardessouspile2 ?n2)) 
+    ) 
+
+
+        (:action move_random
+		:parameters (?ag1 - agent ?n1 - noeud ?n2 - noeud ?arlink - arete)
+		:precondition (and (agentSur ?ag1 ?n1) (link ?n1 ?n2 ?arlink) (link ?n2 ?n1 ?arlink))
+		:effect (and (agentSur ?ag1 ?n2) (not (agentSur ?ag1 ?n1)))
+	)
