@@ -2,4 +2,4 @@
 
 javac -cp "libs/*" -d build src/*.java
 
-java -cp libs/*:build/ $@
+java -cp libs/*:build/ SATEncoding $@
