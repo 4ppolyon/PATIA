@@ -40,6 +40,7 @@ public class SATEncoding {
         this.ids = new HashMap<>();
         this.lastID = 1;
 
+        // Initialisation de fluentsEffects
         for(int i = 0; i < problem.getFluents().size(); i++) {
             final Fluent fluent = problem.getFluents().get(i);
             final List<Action> effectActions = new ArrayList<>();
@@ -60,11 +61,15 @@ public class SATEncoding {
 
         int nb_actions = problem.getActions().size();
         for (int i = 0; i < maxSteps; i++) {
+            // Pour chaque étape du plan
             if (nb_actions > 1) {
+                // Conversion des actions disjunctions
                 convertActionDisjunction(i);
             }
+            // Conversion des states transitions
             convertStateTransitions(i);
             for (Action action : problem.getActions()) {
+                // Conversion des actions
                 convertAction(action, i);
             }
         }
@@ -72,6 +77,9 @@ public class SATEncoding {
         convertInitGoal(true);
     }
 
+    /**
+     * Retourne l'id de la variable pour une action ou un prédicat à une étape donnée
+     */
     public int getID(Object obj, int step) {
         int id = System.identityHashCode(obj) * (step + 1);
         if(!ids.containsKey(id)) {
@@ -81,6 +89,9 @@ public class SATEncoding {
         return ids.get(id);
     }
 
+    /**
+     * Retourne le plan pour le problème donné
+     */
     public String getPlan() {
         try {
             if(solver.isSatisfiable()) {
@@ -112,6 +123,9 @@ public class SATEncoding {
         return "";
     }
 
+    /**
+     * Lance la résolution du problème
+     */
     public void solve() {
         try {
             solver.isSatisfiable();
@@ -119,6 +133,9 @@ public class SATEncoding {
         }
     }
 
+    /**
+     * Convertit l'état initial et l'état final
+     */
     private void convertInitGoal(boolean goal) {
         final int nb_fluents = problem.getFluents().size();
         final BitVector predicates = goal ? problem.getGoal().getPositiveFluents() : problem.getInitialState().getPositiveFluents();
@@ -132,6 +149,9 @@ public class SATEncoding {
         }
     }
 
+    /**
+     * Convertit une action à une étape donnée
+     */
     private void convertAction(Action action, int step) {
         final int nb_fluents = problem.getFluents().size();
         final int actionID = getID(action, step);
@@ -168,6 +188,9 @@ public class SATEncoding {
         }
     }
 
+    /**
+     * Convertit les actions disjunctions à une étape donnée
+     */
     private void convertActionDisjunction(int step) {
         int nb_actions = problem.getActions().size();
         for(int i = 0; i < nb_actions; i++) {
@@ -183,6 +206,9 @@ public class SATEncoding {
         }
     }
 
+    /**
+     * Convertit les states transitions à une étape donnée
+     */
     private void convertStateTransitions(int step) {
         for (final Fluent fluent : this.fluentsEffects.keySet()) {
             Action[] actions = fluentsEffects.get(fluent);
@@ -213,6 +239,9 @@ public class SATEncoding {
         }
     }
 
+    /**
+     * Ajoute une clause au problème SAT (la clause est en CNF)
+     */
     private void addClause(int[] clause) {
         try {
             solver.addClause(new VecInt(clause));
@@ -220,6 +249,9 @@ public class SATEncoding {
         }
     }
 
+    /**
+     * Convertit une action en string (utilisée par la méthode getPlan)
+    */
     private String actionToString(Action a, int step) {
         List<String> symbols = problem.getConstantSymbols();
         StringBuilder builder = new StringBuilder();
